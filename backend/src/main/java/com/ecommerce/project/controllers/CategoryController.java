@@ -2,6 +2,8 @@ package com.ecommerce.project.controllers;
 
 import com.ecommerce.project.payload.ApiResponse;
 import com.ecommerce.project.entity.Category;
+import com.ecommerce.project.payload.requestDto.CategoryDTO;
+import com.ecommerce.project.payload.responseDto.CategoryResponseDTO;
 import com.ecommerce.project.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,32 +22,32 @@ public class CategoryController {
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<ApiResponse<List<Category>>> getAllCategories() {
-        List<Category> categories = categoryService.getAllCategories();
-        ApiResponse<List<Category>> response = new ApiResponse<>("Categories retrieved successfully", categories);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<List<CategoryDTO>>> getAllCategories() {
+        List<CategoryDTO> categories = categoryService.getAllCategories();
+        ApiResponse<List<CategoryDTO>> response = new ApiResponse<>("Categories retrieved successfully", categories);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/public/categories")
-    public ResponseEntity<ApiResponse<Category>> createCategory(@Valid @RequestBody Category category) {
-        Category createdCategory = categoryService.createCategory(category);
-        ApiResponse<Category> response = new ApiResponse<>("Category created successfully", createdCategory);
+    public ResponseEntity<ApiResponse<CategoryDTO>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO savedCategory = categoryService.createCategory(categoryDTO);
+        ApiResponse<CategoryDTO> response = new ApiResponse<>("Category created successfully", savedCategory);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<ApiResponse<Category>> updateCategoryById(@Valid @RequestBody Category category, @PathVariable Long categoryId) {
-        Category updatedCategory = categoryService.updateCategoryById(categoryId, category);
-        ApiResponse<Category> response = new ApiResponse<>("Category updated successfully", updatedCategory);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategoryById(@Valid @RequestBody CategoryDTO categoryDTO,
+                                                                       @PathVariable Long categoryId) {
+        CategoryDTO updatedCategory = categoryService.updateCategoryById(categoryId, categoryDTO);
+        ApiResponse<CategoryDTO> response = new ApiResponse<>("Category updated successfully", updatedCategory);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<ApiResponse<String>> deleteCategoryById(@PathVariable Long categoryId) {
         String message = categoryService.deleteCategory(categoryId);
-        ApiResponse<String> response = new ApiResponse<>(message, null);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        ApiResponse<String> response = new ApiResponse<>( message,null);
+        return ResponseEntity.ok(response);
     }
 
 }
