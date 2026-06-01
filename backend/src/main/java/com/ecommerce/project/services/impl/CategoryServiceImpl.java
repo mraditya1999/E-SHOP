@@ -9,6 +9,10 @@ import com.ecommerce.project.payload.responseDto.CategoryResponseDTO;
 import com.ecommerce.project.repositories.CategoryRepository;
 import com.ecommerce.project.services.CategoryService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,14 +36,26 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDTO> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
+    public CategoryResponseDTO getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize,sortByAndOrder);
+
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+        if (categoryPage.isEmpty()) {
             throw new APIException("No categories found");
         }
-        return categories.stream()
-                .map(this::convertToDto)
-                .toList();
+
+        Page<CategoryDTO> categoryDTOPage = categoryPage.map(this::convertToDto);
+        return new CategoryResponseDTO(
+                categoryDTOPage.getContent(),
+                categoryDTOPage.getNumber(),
+                categoryDTOPage.getSize(),
+                categoryDTOPage.getTotalElements(),
+                categoryDTOPage.getTotalPages(),
+                categoryDTOPage.isLast()
+        );
     }
 
     @Override
