@@ -15,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
@@ -37,24 +35,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc" )
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-        Pageable pageDetails = PageRequest.of(pageNumber, pageSize,sortByAndOrder);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
         Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
         if (categoryPage.isEmpty()) {
-            throw new APIException("No categories found");
+            throw new APIException("No categories found" );
         }
 
-        Page<CategoryDTO> categoryDTOPage = categoryPage.map(this::convertToDto);
+        Page<CategoryDTO> categoryDTOS = categoryPage.map(this::convertToDto);
         return new CategoryResponseDTO(
-                categoryDTOPage.getContent(),
-                categoryDTOPage.getNumber(),
-                categoryDTOPage.getSize(),
-                categoryDTOPage.getTotalElements(),
-                categoryDTOPage.getTotalPages(),
-                categoryDTOPage.isLast()
+                categoryDTOS.getContent(),
+                categoryDTOS.getNumber(),
+                categoryDTOS.getSize(),
+                categoryDTOS.getTotalElements(),
+                categoryDTOS.getTotalPages(),
+                categoryDTOS.isLast()
         );
     }
 
